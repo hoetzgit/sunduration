@@ -72,33 +72,33 @@ class SunshineDuration(StdService):
             if radiation > seuil and radiation > 20:
                 self.sunshineSeconds += self.LoopDuration
             self.lastSeuil = seuil
-            logdbg("Calculated LOOP sunshine_time = %f, based on radiation = %f, and threshold = %f" % (
+            logdbg("Calculated LOOP sunshineDur = %f, based on radiation = %f, and threshold = %f" % (
                 self.LoopDuration, radiation, seuil))
 
     def newArchiveRecord(self, event):
         """Gets called on a new archive record event."""
         if self.lastdateTime == 0 or self.firstArchive:  # LOOP packets not yet captured : missing archive record extracted from datalogger at start OR first archive record after weewx start
             radiation = event.record.get('radiation')
-            event.record['sunshine_time'] = 0.0
+            event.record['sunshineDur'] = 0.0
             if radiation is not None:
                 seuil = self.sunshineThreshold(event.record.get('dateTime'))
                 self.lastSeuil = seuil
                 if radiation > seuil and radiation > 20:
-                    event.record['sunshine_time'] = event.record['interval']
+                    event.record['sunshineDur'] = event.record['interval'] * 60 # seconds
                 if self.lastdateTime != 0:  # LOOP already started, this is the first regular archive after weewx start
                     self.firstArchive = False
                 
             loginf("Estimated sunshine duration from archive record= %f min, radiation = %f, and threshold = %f" % (
-                event.record['sunshine_time'], event.record['radiation'], self.lastSeuil))
-        else
-            event.record['sunshine_time'] = round(self.sunshineSeconds / 60)
+                event.record['sunshineDur'], event.record['radiation'], self.lastSeuil))
+        else:
+            event.record['sunshineDur'] = self.sunshineSeconds
             loginf("Sunshine duration from loop packets = %f min, last radiation = %f, and last threshold = %f" % (
-                event.record['sunshine_time'], event.record['radiation'], self.lastSeuil))
+                event.record['sunshineDur'], event.record['radiation'], self.lastSeuil))
 
         self.sunshineSeconds = 0
 
     def sunshineThreshold(self, mydatetime):
-        coeff = 0.9  # change to calibrate with your sensor
+        # coeff = 0.9  # change to calibrate with your sensor
         utcdate = datetime.utcfromtimestamp(mydatetime)
         dayofyear = int(time.strftime("%j", time.gmtime(mydatetime)))
         theta = 360 * dayofyear / 365
@@ -120,9 +120,9 @@ class SunshineDuration(StdService):
         if hauteur_soleil > 3:
             seuil = (0.97 + 0.21 * cos((pi / 180) * 360 * dayofyear / 365)) * 860 * pow(
                 (sin(pi / 180) * hauteur_soleil), 1.25) 
-        else :
-            seuil=0
+        else:
+            seuil = 0
         return seuil
     
     
-    schema_with_sunshine_time = schemas.wview.schema + [('sunshine_time', 'REAL')]
+    schema_with_sunshineDur = schemas.wview.schema + [('sunshineDur', 'REAL')]
