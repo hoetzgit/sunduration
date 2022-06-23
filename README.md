@@ -34,23 +34,23 @@ At the start of weewx, missing archive records imported from the datalogger have
                 # It is *only* used when the database is created.
                 #schema = schemas.wview.schema
                 schema = user.sunduration.schema_with_sunshineDur
-         ```
+       ```
        ### with mysql database :
-          ```python
-           [DataBindings]
-               [[wx_binding]]
-                   # The database must match one of the sections in [Databases].
-                   # This is likely to be the only option you would want to change.
-                   database = archive_mysql 
-                   # The name of the table within the database
-                   table_name = archive
-                   # The manager handles aggregation of data for historical summaries
-                   manager = weewx.wxmanager.WXDaySummaryManager
-                   # The schema defines the structure of the database.
-                   # It is *only* used when the database is created.
-                   #schema = schemas.wview.schema
-                   schema = user.sunduration.schema_with_sunshineDur
-          ```
+       ```python
+        [DataBindings]
+            [[wx_binding]]
+                # The database must match one of the sections in [Databases].
+                # This is likely to be the only option you would want to change.
+                database = archive_mysql 
+                # The name of the table within the database
+                table_name = archive
+                # The manager handles aggregation of data for historical summaries
+                manager = weewx.wxmanager.WXDaySummaryManager
+                # The schema defines the structure of the database.
+                # It is *only* used when the database is created.
+                #schema = schemas.wview.schema
+                schema = user.sunduration.schema_with_sunshineDur
+       ```
    4. Shutdown Weewx and update your database to bring in the new field.
        ```python
        wee_database weewx.conf --reconfigure
@@ -66,7 +66,7 @@ For SQLite:
     mv weewx.sdb_new weewx.sdb
   ```
 
-For Mysql: 
+For Mysql:
   ```
     mysql -u <username> --password=<mypassword>
     mysql> DROP DATABASE weewx;                             # Delete the old database
@@ -114,23 +114,23 @@ Au démarrage de weewx, des enregistrement d'archives manquants sont éventuelle
                 # It is *only* used when the database is created.
                 #schema = schemas.wview.schema
                 schema = user.sunduration.schema_with_sunshineDur
-         ```
+       ```
        ### avec mysql :
-          ```python
-           [DataBindings]
-               [[wx_binding]]
-                   # The database must match one of the sections in [Databases].
-                   # This is likely to be the only option you would want to change.
-                   database = archive_mysql 
-                   # The name of the table within the database
-                   table_name = archive
-                   # The manager handles aggregation of data for historical summaries
-                   manager = weewx.wxmanager.WXDaySummaryManager
-                   # The schema defines the structure of the database.
-                   # It is *only* used when the database is created.
-                   #schema = schemas.wview.schema
-                   schema = user.sunduration.schema_with_sunshineDur
-          ```
+       ```python
+        [DataBindings]
+            [[wx_binding]]
+                # The database must match one of the sections in [Databases].
+                # This is likely to be the only option you would want to change.
+                database = archive_mysql 
+                # The name of the table within the database
+                table_name = archive
+                # The manager handles aggregation of data for historical summaries
+                manager = weewx.wxmanager.WXDaySummaryManager
+                # The schema defines the structure of the database.
+                # It is *only* used when the database is created.
+                #schema = schemas.wview.schema
+                schema = user.sunduration.schema_with_sunshineDur
+       ```
    4.  Stopper Weewx  et mettre a jour la base de donnee avec le nouveau champ "sunshineDur".
        ```python
        wee_database weewx.conf --reconfigure
