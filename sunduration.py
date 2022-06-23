@@ -88,11 +88,11 @@ class SunshineDuration(StdService):
                 if self.lastdateTime != 0:  # LOOP already started, this is the first regular archive after weewx start
                     self.firstArchive = False
                 
-            loginf("Estimated sunshine duration from archive record= %f min, radiation = %f, and threshold = %f" % (
+            loginf("Estimated sunshine duration from archive record= %f, radiation = %f, and threshold = %f" % (
                 event.record['sunshineDur'], event.record['radiation'], self.lastSeuil))
         else:
             event.record['sunshineDur'] = self.sunshineSeconds
-            loginf("Sunshine duration from loop packets = %f min, last radiation = %f, and last threshold = %f" % (
+            loginf("Sunshine duration from loop packets = %f, last radiation = %f, and last threshold = %f" % (
                 event.record['sunshineDur'], event.record['radiation'], self.lastSeuil))
 
         self.sunshineSeconds = 0
