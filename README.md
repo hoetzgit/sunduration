@@ -74,7 +74,16 @@ For Mysql:
     mysql> RENAME TABLE weewx_new.archive TO weewx.archive; # Rename to the nominal name
   ```
   
-   6. Use [sunshineDur] in your graphs and html template tags.
+   6. Tell Weewx about the units for this new type (only WeeWX < v10.04.2022)
+        Add this to user/extensions.py:
+        ```python
+         #
+         # Units for sunshineDur calculated field
+         #
+         import weewx.units
+         weewx.units.obs_group_dict['sunshineDur'] = 'group_deltatime'
+         ```
+   7. Use [sunshineDur] in your graphs and html template tags.
    
    Lots more detail on this process can be found here:http://www.weewx.com/docs/customizing.htm#archive_database
    
@@ -155,8 +164,17 @@ Pour Mysql:
     mysql> CREATE DATABASE weewx;                           # Create a new one with the same name
     mysql> RENAME TABLE weewx_new.archive TO weewx.archive; # Rename to the nominal name
   ```
-
-   6. Utiliser le tag [sunshineDur] pour vos graphiques ou templates.
+       
+   6. Configurer dans weewx l'unité utilisée pour ce nouveau champ. (uniquement WeeWX < v10.04.2022)
+      Ajouter à la fin de /usr/share/weewx/user/extensions.py ( ou /home/weewx/bin/user/extensions.py selon l'installation utilisée)
+        ```python
+         #
+         # Units for sunshineDur calculated field
+         #
+         import weewx.units
+         weewx.units.obs_group_dict['sunshineDur'] = 'group_deltatime'
+         ```
+   7. Utiliser le tag [sunshineDur] pour vos graphiques ou templates.
    
    Pour plus de détails sur l'ajout d'un nouveau paramètre, voir::
    http://www.weewx.com/docs/customizing.htm#archive_database
