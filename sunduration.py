@@ -31,7 +31,7 @@ except ImportError:
 
 
     def logmsg(level, msg):
-        syslog.syslog(level, 'meteotemplate: %s' % msg)
+        syslog.syslog(level, 'sunduration: %s' % msg)
 
 
     def logdbg(msg):
