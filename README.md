@@ -105,9 +105,9 @@ Au démarrage de WeeWX, des enregistrement d'archives manquants sont éventuelle
                 # It is *only* used when the database is created.
                 #schema = schemas.wview.schema
                 schema = user.sunduration.schema_with_sunshineDur
-         ```
-    ### avec mysql :
-    ```python
+     ```
+     ### avec mysql :
+     ```python
         [DataBindings]
             [[wx_binding]]
                 # The database must match one of the sections in [Databases].
@@ -121,7 +121,7 @@ Au démarrage de WeeWX, des enregistrement d'archives manquants sont éventuelle
                 # It is *only* used when the database is created.
                 #schema = schemas.wview.schema
                 schema = user.sunduration.schema_with_sunshineDur
-          ```
+     ```
   4. Stopper WeeWX  et mettre a jour la base de donnee avec le nouveau champ "sunshineDur (WeeWX V. 4.5.0 ou plus récent)
      ```python
         wee_database --add-column=sunshineDur --type=REAL
