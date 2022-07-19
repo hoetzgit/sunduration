@@ -88,8 +88,8 @@ Au démarrage de WeeWX, des enregistrement d'archives manquants sont éventuelle
                 prep_services = weewx.engine.StdTimeSynch
                 process_services = user.sunduration.SunshineDuration, weewx.engine.StdConvert, weewx.engine.StdCalibrate, weewx.engine.StdQC, weewx.wxservices.StdWXCalculate
   ```
-  3. Ajouter [sunshineDur] au schéma de la base de donnee .
-     Dans weewx.conf, et dans wx-binding changer le schéma : schema= user.sunduration.schema_with_sunshineDur:
+  3. Ajouter [sunshineDur] au schéma de la base de donnee.
+     Dans weewx.conf, et dans wx-binding changer le schéma: schema = user.sunduration.schema_with_sunshineDur:
      ### avec sqlite :
      ```python
         [DataBindings]
