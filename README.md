@@ -63,7 +63,7 @@ At the start of WeeWX, missing archive records imported from the datalogger have
         # Units for sunshineDur calculated field
         #
         import weewx.units
-        weewx.units.obs_group_dict['sunshineDur'] = 'group_interval'
+        weewx.units.obs_group_dict['sunshineDur'] = 'group_deltatime'
      ```
    7. Use [sunshineDur] in your graphs and html template tags.
    
@@ -136,7 +136,7 @@ Au démarrage de WeeWX, des enregistrement d'archives manquants sont éventuelle
         # Units for sunshineDur calculated field
         #
         import weewx.units
-        weewx.units.obs_group_dict['sunshineDur'] = 'group_interval'
+        weewx.units.obs_group_dict['sunshineDur'] = 'group_deltatime'
      ```
    7. Utiliser le tag [sunshineDur] pour vos graphiques ou templates.
    
