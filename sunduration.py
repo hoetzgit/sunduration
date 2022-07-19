@@ -125,4 +125,4 @@ class SunshineDuration(StdService):
         return seuil
     
     
-    schema_with_sunshineDur = schemas.wview.schema + [('sunshineDur', 'REAL')]
+schema_with_sunshineDur = schemas.wview.schema + [('sunshineDur', 'REAL')]
