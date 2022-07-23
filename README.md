@@ -1,5 +1,8 @@
+# Why this branch: 
+WeeWX contains since version 10.04.2022 a unit group "sunshineDur" : "group_deltatime" (in seconds).
+
 Voir texte en français plus bas.
-# sunduration
+## sunduration
 Adds a new observation field containing sunshine duration to WeeWX: [sunshineDur]
 
 This WeeWX extension was modified from https://github.com/brewster76/util-archer/blob/master/user/radiationhours.py  by applying a formula derived from the formula developed by MeteoFrance to estimate sunshine duration from Davis sensors. (https://forums.infoclimat.fr/f/topic/17151-calcul-duree-ensoleillement/?do=findComment&comment=1216053).  The idea is to determine for each LOOP data a  threshold value that is calculated depending on the date, time and geographic location (latitude and longitude) of the sensor. If the measured solar radiation is higher than the calculated threshold, the sunshine duration for this measurement will be equal to the time interval between the last LOOP and the current LOOP.  The final archive record contain( in seconds) the sum of each LOOP value within the archive period.
