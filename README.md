@@ -1,4 +1,4 @@
-# Why this branch: 
+# Why this branch? 
 WeeWX contains since version 10.04.2022 a unit group "sunshineDur" : "group_deltatime" (in seconds).
 
 Voir texte en français plus bas.
