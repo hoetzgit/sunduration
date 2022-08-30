@@ -70,7 +70,7 @@ At the start of WeeWX, missing archive records imported from the datalogger have
      ```
    7. Use [sunshineDur] in your graphs and html template tags.
    
-  Lots more detail on this process can be found here:http://www.weewx.com/docs/customizing.htm#archive_database
+  More detail on this process can be found here:http://www.weewx.com/docs/customizing.htm#archive_database
    
 # sunduration
 Ajoute à WeeWX un nouveau paramètre contenant la durée d'ensoleillement: [sunshineDur]

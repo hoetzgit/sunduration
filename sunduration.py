@@ -69,7 +69,7 @@ class SunshineDuration(StdService):
             self.LoopDuration = event.packet.get('dateTime') - self.lastdateTime
             self.lastdateTime = event.packet.get('dateTime')
             seuil = self.sunshineThreshold(event.packet.get('dateTime'))
-            if radiation > seuil and radiation > 20 and seuil > 0:
+            if radiation > seuil and seuil > 0:
                 self.sunshineSeconds += self.LoopDuration
             self.lastSeuil = seuil
             logdbg("Calculated LOOP sunshineDur = %f, based on radiation = %f, and threshold = %f" % (
@@ -83,7 +83,7 @@ class SunshineDuration(StdService):
             if radiation is not None:
                 seuil = self.sunshineThreshold(event.record.get('dateTime'))
                 self.lastSeuil = seuil
-                if radiation > seuil and radiation > 20 and seuil > 0:
+                if radiation > seuil and seuil > 0:
                     event.record['sunshineDur'] = event.record['interval'] * 60 # seconds
                 if self.lastdateTime != 0:  # LOOP already started, this is the first regular archive after weewx start
                     self.firstArchive = False
@@ -98,7 +98,6 @@ class SunshineDuration(StdService):
         self.sunshineSeconds = 0
 
     def sunshineThreshold(self, mydatetime):
-        # coeff = 0.9  # change to calibrate with your sensor
         utcdate = datetime.utcfromtimestamp(mydatetime)
         dayofyear = int(time.strftime("%j", time.gmtime(mydatetime)))
         theta = 360 * dayofyear / 365
@@ -117,9 +116,9 @@ class SunshineDuration(StdService):
         angle_horaire = (tempsolaire - 12) * 15
         hauteur_soleil = asin(sin((pi / 180) * latitude) * sin((pi / 180) * declinaison) + cos(
             (pi / 180) * latitude) * cos((pi / 180) * declinaison) * cos((pi / 180) * angle_horaire)) * (180 / pi)
-        if hauteur_soleil > 0:
-            seuil = (0.7 + 0.085 * cos((pi / 180) * 360 * dayofyear / 365)) * 1080 * pow(
-                (sin(pi / 180) * hauteur_soleil), 1.25) 
+        if hauteur_soleil > 3:
+            seuil = (0.73 + 0.06 * cos((pi / 180) * 360 * dayofyear / 365)) * 1080 * pow(
+                (sin(pi / 180 * hauteur_soleil)), 1.25) 
         else:
             seuil = 0
         return seuil
