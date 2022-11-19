@@ -72,7 +72,7 @@ class SunshineDuration(StdService):
             if radiation > seuil and seuil > 0:
                 self.sunshineSeconds += self.LoopDuration
             self.lastSeuil = seuil
-            logdbg("Calculated LOOP sunshineDur = %f, based on radiation = %f, and threshold = %f" % (
+            logdbg("Calculated LOOP sunshineDur = %f, based on radiation = %f and threshold = %f" % (
                 self.LoopDuration, radiation, seuil))
 
     def newArchiveRecord(self, event):
@@ -87,7 +87,7 @@ class SunshineDuration(StdService):
                     event.record['sunshineDur'] = event.record['interval'] * 60 # seconds
                 if self.lastdateTime != 0:  # LOOP already started, this is the first regular archive after weewx start
                     self.firstArchive = False
-                loginf("Estimated sunshine duration from archive record= %f, radiation = %f, and threshold = %f" % (
+                loginf("Estimated sunshine duration first archive record= %f, radiation = %f and threshold = %f" % (
                     event.record['sunshineDur'], event.record['radiation'], self.lastSeuil))
         else:
             event.record['sunshineDur'] = self.sunshineSeconds
