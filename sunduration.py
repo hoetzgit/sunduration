@@ -57,7 +57,6 @@ class SunshineDuration(StdService):
         self.lastdateTime = 0
         self.LoopDuration = 0
         self.sunshineSeconds = 0
-        self.lastSeuil = 0
         self.firstArchive = True
 
     def newLoopPacket(self, event):
@@ -71,7 +70,6 @@ class SunshineDuration(StdService):
             seuil = self.sunshineThreshold(event.packet.get('dateTime'))
             if radiation > seuil and seuil > 0:
                 self.sunshineSeconds += self.LoopDuration
-            self.lastSeuil = seuil
             logdbg("Calculated LOOP sunshineDur = %f, based on radiation = %f and threshold = %f" % (
                 self.LoopDuration, radiation, seuil))
 
@@ -82,13 +80,12 @@ class SunshineDuration(StdService):
             event.record['sunshineDur'] = 0.0
             if radiation is not None:
                 seuil = self.sunshineThreshold(event.record.get('dateTime'))
-                self.lastSeuil = seuil
                 if radiation > seuil and seuil > 0:
                     event.record['sunshineDur'] = event.record['interval'] * 60 # seconds
                 if self.lastdateTime != 0:  # LOOP already started, this is the first regular archive after weewx start
                     self.firstArchive = False
                 loginf("Estimated sunshine duration first archive record= %f, radiation = %f and threshold = %f" % (
-                    event.record['sunshineDur'], event.record['radiation'], self.lastSeuil))
+                    event.record['sunshineDur'], event.record['radiation'], seuil))
         else:
             event.record['sunshineDur'] = self.sunshineSeconds
             loginf("Sunshine duration from loop packets = %f" % (event.record['sunshineDur']))
