@@ -55,7 +55,7 @@ class SunshineDuration(StdService):
         self.bind(weewx.NEW_LOOP_PACKET, self.newLoopPacket)
         self.bind(weewx.NEW_ARCHIVE_RECORD, self.newArchiveRecord)
         self.lastdateTime = 0
-        self.LoopDuration = 0
+        self.loopDuration = 0
         self.sunshineSeconds = 0
         self.firstArchive = True
 
@@ -65,13 +65,13 @@ class SunshineDuration(StdService):
         if radiation is not None:
             if self.lastdateTime == 0:
                 self.lastdateTime = event.packet.get('dateTime')
-            self.LoopDuration = event.packet.get('dateTime') - self.lastdateTime
+            self.loopDuration = event.packet.get('dateTime') - self.lastdateTime
             self.lastdateTime = event.packet.get('dateTime')
             seuil = self.sunshineThreshold(event.packet.get('dateTime'))
             if radiation > seuil and seuil > 0:
-                self.sunshineSeconds += self.LoopDuration
+                self.sunshineSeconds += self.loopDuration
             logdbg("Calculated LOOP sunshineDur = %f, based on radiation = %f and threshold = %f" % (
-                self.LoopDuration, radiation, seuil))
+                self.loopDuration, radiation, seuil))
 
     def newArchiveRecord(self, event):
         """Gets called on a new archive record event."""
