@@ -192,13 +192,11 @@ class SunshineDuration(StdService):
                 # It's the first loop packet, more is not to be done
                 # To calculate the time we wait for the next loop packet
                 # ..L
-                self.lastLoop = loopdateTime
                 if self.debug > 0:
                     logdbg("first loop packet with 'radiation' during archiv interval received.")
             elif radiation >= self.radiation_min:
                 # .L..L..L..L
                 loopDuration = loopdateTime - self.lastLoop
-                self.lastLoop = loopdateTime
                 loopSunshineDur = 0
                 if sunshine > 0:
                     loopSunshineDur = loopDuration
@@ -206,6 +204,8 @@ class SunshineDuration(StdService):
                 if self.debug > 0:
                     logdbg("LOOP sunshineDur=%d, based on threshold=%.2f radiation=%.2f loopDuration=%d loopSunshineDur=%d" % (
                         self.sunshineDur, threshold, radiation, loopDuration, loopSunshineDur))
+
+            self.lastLoop = loopdateTime
 
             if self.add_sunshine_to_loop:
                 target_data = {}
@@ -248,7 +248,7 @@ class SunshineDuration(StdService):
                             target_data['sunshineDur'], threshold, radiation, interval))
                 else:
                     if self.debug > 1:
-                        logdbg("ARCHIV no claculation, radiation=%.2f lower than radiation_min=%.2f" % (radiation, self.radiation_min))
+                        logdbg("ARCHIV no calculation, radiation=%.2f lower than radiation_min=%.2f" % (radiation, self.radiation_min))
         else:
             # sum from loop packets
             # .L..L..L..L..L..A
