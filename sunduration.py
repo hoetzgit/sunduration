@@ -145,6 +145,8 @@ class SunshineDuration(StdService):
         if coeff is None:
             coeff = self.coeff_default
             logerr("User configured coeff_monthly month=%d is not valid! Using coeff_default=%.2f instead." % (monthofyear, self.coeff_default))
+        if self.debug > 1:
+            logdbg("sunshineThreshold coeff=%.2f" % coeff) 
         theta = 360 * dayofyear / 365
         equatemps = 0.0172 + 0.4281 * cos((pi / 180) * theta) - 7.3515 * sin(
             (pi / 180) * theta) - 3.3495 * cos(2 * (pi / 180) * theta) - 9.3619 * sin(
@@ -177,6 +179,8 @@ class SunshineDuration(StdService):
                 # It's the first loop packet, more is not to be done
                 # To calculate the time we wait for the next loop packet
                 self.lastdateTime = loopdateTime
+                if self.debug > 1:
+                    logdbg("first loop packet")
             else:
                 loopDuration = loopdateTime - self.lastdateTime
                 self.lastdateTime = loopdateTime
@@ -196,6 +200,11 @@ class SunshineDuration(StdService):
                         target_data['sunshine'] = sunshine
                         # add sunshine to LOOP
                         event.packet.update(target_data)
+                        if self.debug > 1:
+                            logdbg("Loop sunshine=%d" % (sunshine))
+                else:
+                    if self.debug > 1:
+                        logdbg("Loop radiation=%.2f lower than radiation_min=%.2f" % (radiation, self.radiation_min))
 
     def newArchiveRecord(self, event):
         """Gets called on a new archive record event."""
@@ -205,17 +214,21 @@ class SunshineDuration(StdService):
         if self.lastdateTime == 0:
             # loop packets with 'radiation' not yet captured
             radiation = event.record.get('radiation')
-            if radiation is not None and radiation >= self.radiation_min:
-                # We assume here that the radiation is an average value over the whole archive period.
-                # If this value is higher than the threshold value, we assume that the sun shone during
-                # the whole archive interval.
-                threshold = self.sunshineThreshold(event.record.get('dateTime'))
-                archivInterval = event.record.get('interval') * 60 # seconds
-                if threshold > 0.0 and radiation > threshold:
-                    target_data['sunshineDur'] = archivInterval
-                if self.debug > 0:
-                    logdbg("Archiv sunshineDur=%d, based on threshold=%.2f radiation=%.2f archivInterval=%d" % (
-                        target_data['sunshineDur'], threshold, radiation, archivInterval))
+            if radiation is not None:
+                if radiation >= self.radiation_min:
+                    # We assume here that the radiation is an average value over the whole archive period.
+                    # If this value is higher than the threshold value, we assume that the sun shone during
+                    # the whole archive interval.
+                    threshold = self.sunshineThreshold(event.record.get('dateTime'))
+                    archivInterval = event.record.get('interval') * 60 # seconds
+                    if threshold > 0.0 and radiation > threshold:
+                        target_data['sunshineDur'] = archivInterval
+                    if self.debug > 0:
+                        logdbg("Archiv sunshineDur=%d, based on threshold=%.2f radiation=%.2f archivInterval=%d" % (
+                            target_data['sunshineDur'], threshold, radiation, archivInterval))
+                else:
+                    if self.debug > 1:
+                        logdbg("Archiv radiation=%.2f lower than radiation_min=%.2f" % (radiation, self.radiation_min))
         else:
             # sum from loop packets
             target_data['sunshineDur']  = self.sunshineDur
