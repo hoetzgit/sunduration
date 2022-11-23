@@ -86,6 +86,14 @@ class SunshineDuration(StdService):
         super(SunshineDuration, self).__init__(engine, config_dict)
         loginf("Service version is %s" % VERSION)
 
+        cust_dict = config_dict.get('SunshineDuration', {})
+        enable = to_bool(cust_dict.get('enable', True))
+        if enable:
+            loginf("Service is enabled.")
+        else:
+            loginf("Service is disabled. Enable it in the SunshineDuration section of weewx.conf.")
+            return
+
         # extension defaults
         self.debug = 0
         self.radiation_min = 0.0
@@ -94,13 +102,6 @@ class SunshineDuration(StdService):
         self.add_sunshine_to_loop = False
 
         # optional customizations by the user.
-        cust_dict = config_dict.get('SunshineDuration', {})
-        enable = to_bool(cust_dict.get('enable', True))
-        if enable:
-            loginf("Service is enabled.")
-        else:
-            loginf("Service is disabled. Enable it in the SunshineDuration section of weewx.conf.")
-            return
         self.debug = to_int(cust_dict.get('debug', self.debug))
         loginf("debug level is %d" % self.debug)
         self.radiation_min = to_float(cust_dict.get('radiation_min', self.radiation_min))
@@ -132,6 +133,8 @@ class SunshineDuration(StdService):
         self.lastdateTime = 0
         # sum sunshineDur within archiv interval
         self.sunshineDur = 0
+        # Only one loop packet with 'radiation' received
+        self.firstLoop = False
 
         # Start intercepting events:
         self.bind(weewx.NEW_LOOP_PACKET, self.newLoopPacket)
@@ -179,9 +182,12 @@ class SunshineDuration(StdService):
                 # It's the first loop packet, more is not to be done
                 # To calculate the time we wait for the next loop packet
                 self.lastdateTime = loopdateTime
+                self.firstLoop = True
                 if self.debug > 1:
                     logdbg("first loop packet")
             else:
+                if self.firstLoop:
+                    self.firstLoop = False
                 loopDuration = loopdateTime - self.lastdateTime
                 self.lastdateTime = loopdateTime
                 if radiation >= self.radiation_min:
@@ -211,8 +217,8 @@ class SunshineDuration(StdService):
         target_data = {}
         target_data['sunshineDur'] = 0.0
 
-        if self.lastdateTime == 0:
-            # loop packets with 'radiation' not yet captured
+        if self.lastdateTime == 0 or self.firstLoop:
+            # loop packets with 'radiation' not yet captured or only ONE loop packet with 'radiation'
             radiation = event.record.get('radiation')
             if radiation is not None:
                 if radiation >= self.radiation_min:
@@ -220,18 +226,25 @@ class SunshineDuration(StdService):
                     # If this value is higher than the threshold value, we assume that the sun shone during
                     # the whole archive interval.
                     threshold = self.sunshineThreshold(event.record.get('dateTime'))
-                    archivInterval = event.record.get('interval') * 60 # seconds
+                    if self.firstLoop:
+                        archivedateTime = event.record.get('dateTime')
+                        interval = archivedateTime - self.lastdateTime
+                        if self.debug > 0:
+                            logdbg("Archiv calculation using the time differenz to the first loop packet.")
+                        self.firstLoop = False
+                    else:
+                        interval = event.record.get('interval') * 60 # seconds
                     if threshold > 0.0 and radiation > threshold:
-                        target_data['sunshineDur'] = archivInterval
+                        target_data['sunshineDur'] = interval
                     if self.debug > 0:
-                        logdbg("Archiv sunshineDur=%d, based on threshold=%.2f radiation=%.2f archivInterval=%d" % (
-                            target_data['sunshineDur'], threshold, radiation, archivInterval))
+                        logdbg("Archiv sunshineDur=%d, based on threshold=%.2f radiation=%.2f interval=%d" % (
+                            target_data['sunshineDur'], threshold, radiation, interval))
                 else:
                     if self.debug > 1:
                         logdbg("Archiv radiation=%.2f lower than radiation_min=%.2f" % (radiation, self.radiation_min))
         else:
             # sum from loop packets
-            target_data['sunshineDur']  = self.sunshineDur
+            target_data['sunshineDur'] = self.sunshineDur
             if self.debug > 0:
                 logdbg("Archiv sunshineDur=%d, based on loop packets." % (target_data['sunshineDur']))
 
