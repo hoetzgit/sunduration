@@ -1,7 +1,7 @@
 """
     Copyright (C) 2022 Henry Ott
     based on code from https://github.com/Jterrettaz/sunduration
-    Status: WORK IN PROGRESS
+    Status: work in progress
 
     Adds new observation fields containing sunshine duration and
     sunshine yes/no
@@ -28,7 +28,6 @@ import syslog
 from math import sin, cos, pi, asin
 from datetime import datetime
 import time
-
 import weewx
 from weewx.wxengine import StdService
 from weeutil.weeutil import to_bool, to_int, to_float
@@ -121,9 +120,9 @@ class SunDuration(StdService):
 
         # dateTime from the last loop package with valid 'radiation'
         self.lastLoop = None
-        # dateTime from the last archiv record
-        self.lastArchiv = None
-        # sum sunshineDur within archiv interval
+        # dateTime from the last archive record
+        self.lastArchive = None
+        # sum sunshineDur within archive interval
         self.sunshineDur = None
 
         # Start intercepting events:
@@ -180,7 +179,7 @@ class SunDuration(StdService):
                     # ..L
                     self.sunshineDur = 0
                     if self.debug >= 3:
-                        logdbg("first loop packet with 'radiation' during archiv interval received.")
+                        logdbg("first loop packet with 'radiation' during archive interval received.")
                 else:
                     # .L..L..L..L
                     loopDuration = loopdateTime - self.lastLoop
@@ -213,11 +212,11 @@ class SunDuration(StdService):
         target_data['sunshineDur'] = None
         archivedateTime = event.record.get('dateTime')
 
-        if self.lastArchiv is not None and self.lastLoop is not None and self.lastLoop < self.lastArchiv:
-            # No loop packets with values for 'radiation' or 'radiation' < min during the last archiv interval, discard loop indicator.
+        if self.lastArchive is not None and self.lastLoop is not None and self.lastLoop < self.lastArchive:
+            # No loop packets with values for 'radiation' or 'radiation' < min during the last archive interval, discard loop indicator.
             # .L..L..L..L..A..........A
             if self.debug >= 3:
-                logdbg("No loop packets with values for 'radiation' or 'radiation' < min during the last archiv interval, discard loop indicator.")
+                logdbg("No loop packets with values for 'radiation' or 'radiation' < min during the last archive interval, discard loop indicator.")
             self.lastLoop = None
             self.sunshineDur = None
 
@@ -236,12 +235,12 @@ class SunDuration(StdService):
                     if threshold > 0.0 and radiation > threshold:
                         target_data['sunshineDur'] = interval
                     if self.debug >= 2:
-                        logdbg("ARCHIV sunshineDur=%d, based on threshold=%.2f radiation=%.2f interval=%d" % (
+                        logdbg("ARCHIVE sunshineDur=%d, based on threshold=%.2f radiation=%.2f interval=%d" % (
                             target_data['sunshineDur'], threshold, radiation, interval))
                 elif self.debug >= 2:
-                    logdbg("ARCHIV no calculation, radiation=%.2f lower than radiation_min=%.2f" % (radiation, self.radiation_min))
+                    logdbg("ARCHIVE no calculation, radiation=%.2f lower than radiation_min=%.2f" % (radiation, self.radiation_min))
             elif self.debug >= 3:
-                logdbg("ARCHIV no calculation, 'radiation' not in archive record or is None.")
+                logdbg("ARCHIVE no calculation, 'radiation' not in archive record or is None.")
         else:
             # sum from loop packets
             # .L..L..L..L..L..A
@@ -249,10 +248,10 @@ class SunDuration(StdService):
             # reset loop sum
             self.sunshineDur = 0
             if self.debug >= 2:
-                logdbg("ARCHIV sunshineDur=%d, based on loop packets." % (target_data['sunshineDur']))
+                logdbg("ARCHIVE sunshineDur=%d, based on loop packets." % (target_data['sunshineDur']))
 
         event.record.update(target_data)
-        self.lastArchiv = archivedateTime
+        self.lastArchive = archivedateTime
     
 # Tell the unit system what group our new observation types, 'sunshineDur' and 'sunshine', belongs to:
 weewx.units.obs_group_dict['sunshineDur'] = "group_deltatime"
